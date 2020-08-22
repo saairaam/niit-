@@ -1,0 +1,43 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security.xsd">
+
+<http auto-config="true" use-expressions="true">
+<intercept-url pattern="/admin**" access="hasAuthority('ROLE_ADMIN')" />
+		<intercept-url pattern="/**" access="hasAuthority('ROLE_USER')" />
+		<intercept-url pattern="/**" access="permitAll" />
+		<intercept-url pattern="/cart**" access="hasAuthority('ROLE_USER')"/>
+	
+	
+		<!-- <form-login authentication-success-forward-url="/login_success"  authentication-failure-url="/login?error" username-parameter="username"
+			password-parameter="password"/>
+<logout logout-success-url="/login?logout" />
+ -->
+ <form-login login-page="/login" default-target-url="/"
+ 			username-parameter="username"
+			password-parameter="password"
+			authentication-failure-url="/login1" 
+			authentication-success-forward-url="/login_success"
+			login-processing-url="/processing"/>
+		
+ 			<logout logout-success-url="/home" />
+ 
+ 	<csrf disabled="true"/>
+	</http>
+	<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></beans:bean>
+
+	
+
+<authentication-manager>
+	<authentication-provider>
+	<password-encoder ref="encoder" ></password-encoder>
+	<jdbc-user-service
+				data-source-ref="dataSource" users-by-username-query="select username,password,enabled from UserDetail where username=?" 
+	    					authorities-by-username-query="select username, role from userDetail where username =?  " />
+	</authentication-provider>
+</authentication-manager>
+</beans:beans>
